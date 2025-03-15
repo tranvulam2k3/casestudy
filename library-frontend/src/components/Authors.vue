@@ -2,22 +2,16 @@
   <section id="authors" class="testimonial">
     <div class="container">
       <div class="section-header">
-        <p>Tác giả <span>nổi bật</span></p>
         <h2>Tác giả nổi bật</h2>
       </div>
-      <div class="row">
-        <div class="col-md-12">
-          <div class="testimonial-carousel owl-carousel">
-            <div class="testimonial-box" v-for="author in authors" :key="author.id">
-              <div class="testimonial-img">
-                <img :src="author.image" :alt="author.name">
-              </div>
-              <div class="testimonial-content">
-                <h2>{{ author.name }}</h2>
-                <h3>{{ author.field }}</h3>
-                <p>{{ author.description }}</p>
-              </div>
-            </div>
+      <div class="author-container">
+        <div class="author-item" v-for="author in authors" :key="author.id">
+          <div class="author-image">
+            <img :src="author.image" :alt="author.name">
+          </div>
+          <div class="author-content">
+            <h3 class="author-name">{{ author.name }}</h3>
+            <p class="author-description">{{ author.description }}</p>
           </div>
         </div>
       </div>
@@ -34,30 +28,20 @@ export default {
         {
           id: 1,
           name: 'Nguyễn Nhật Ánh',
-          field: 'Văn học thiếu nhi',
           description: 'Nhà văn nổi tiếng với nhiều tác phẩm đặc sắc như "Mắt biếc", "Tôi thấy hoa vàng trên cỏ xanh"...',
-          image: './assets/images/authors/author1.jpg'
+          image: '/src/assets/images/authors/author3.jpg'
         },
         {
           id: 2,
           name: 'Rosie Nguyễn',
-          field: 'Kỹ năng sống',
           description: 'Tác giả của những cuốn sách self-help nổi tiếng như "Tuổi trẻ đáng giá bao nhiêu".',
-          image: './assets/images/authors/author2.jpg'
+          image: '/src/assets/images/authors/author3.jpg'
         },
         {
           id: 3,
           name: 'Tô Hoài',
-          field: 'Văn học thiếu nhi',
           description: 'Nhà văn nổi tiếng với tác phẩm "Dế Mèn phiêu lưu ký", một tác phẩm kinh điển của văn học Việt Nam.',
-          image: './assets/images/authors/author3.jpg'
-        },
-        {
-          id: 4,
-          name: 'Dale Carnegie',
-          field: 'Phát triển bản thân',
-          description: 'Tác giả nổi tiếng với "Đắc nhân tâm", tác phẩm self-help bán chạy nhất mọi thời đại.',
-          image: './assets/images/authors/author4.jpg'
+          image: '/src/assets/images/authors/author3.jpg'
         }
       ]
     }
@@ -91,5 +75,119 @@ export default {
 </script>
 
 <style scoped>
-/* Styles cụ thể cho component này, nếu cần */
+#authors {
+  padding: 80px 0;
+  background-color: #f8f9fb;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.section-header h2 {
+  color: #333;
+  font-size: 32px;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.section-header h2:after {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 50px;
+  height: 3px;
+  background: #98d1d3;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.section-header p {
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.section-header p span {
+  color: #4e4ffa;
+}
+
+.author-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.author-item {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  text-align: center;
+}
+
+.author-item:hover {
+  transform: translateY(-10px);
+}
+
+.author-image {
+  width: 150px;
+  height: 150px;
+  margin: 30px auto 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #9fc6d8;
+  box-shadow: 0 0 0 4px rgba(78, 79, 250, 0.1);
+}
+
+.author-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.author-item:hover .author-image img {
+  transform: scale(1.1);
+}
+
+.author-content {
+  padding: 0 30px 60px;
+  
+}
+
+.author-name {
+  color: #333;
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+
+.author-description {
+  color: #666;
+  font-size: 20px;
+  line-height: 1.6;
+}
+
+@media (max-width: 992px) {
+  .author-container {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .author-container {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  
+  .author-image {
+    width: 100px;
+    height: 100px;
+  }
+}
 </style> 

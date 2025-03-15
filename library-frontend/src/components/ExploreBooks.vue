@@ -1,47 +1,37 @@
 <template>
-  <section id="explore" class="featured-cars">
+  <section id="explore" class="featured-books">
     <div class="container">
       <div class="section-header">
         <p>Khám phá <span>những</span> cuốn sách nổi bật</p>
         <h2>Sách nổi bật</h2>
       </div>
-      <div class="featured-cars-content">
-        <div class="row">
-          <div class="col-lg-3 col-md-4 col-sm-6" v-for="book in featuredBooks" :key="book.id">
-            <div class="single-featured-cars">
-              <div class="featured-img-box">
-                <div class="featured-cars-img">
-                  <img :src="book.image" :alt="book.title">
-                </div>
-                <div class="featured-model-info">
-                  <p>
-                    Thể loại: {{ book.category }}
-                    <span class="featured-mi-span"> {{ book.pages }} trang</span>
-                    <span class="featured-hp-span"> {{ book.year }}</span>
-                    {{ book.publisher }}
-                  </p>
-                </div>
-              </div>
-              <div class="featured-cars-txt">
-                <h2><a href="#">{{ book.title }}</a></h2>
-                <h3>{{ formatPrice(book.price) }}</h3>
-                <p>
-                  {{ book.description }}
-                </p>
-                <button class="welcome-btn" @click="borrowBook(book.id)">
-                  mượn sách
-                </button>
-              </div>
+      <div class="books-grid">
+        <div class="book-card" v-for="book in featuredBooks" :key="book.id">
+          <div class="book-image">
+            <img :src="book.image" :alt="book.title">
+          </div>
+          <div class="book-info">
+            <span class="book-category">{{ book.category }}</span>
+            <div class="book-details">
+              <span>{{ book.pages }} trang</span>
+              <span>{{ book.year }}</span>
+              <span>{{ book.publisher }}</span>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12 text-center">
-            <button class="welcome-btn" @click="loadMoreBooks">
-              Xem thêm
+          <div class="book-content">
+            <h3 class="book-title">{{ book.title }}</h3>
+            <div class="book-price">{{ formatPrice(book.price) }}</div>
+            <p class="book-description">{{ book.description }}</p>
+            <button class="borrow-button" @click="borrowBook(book.id)">
+              Mượn sách
             </button>
           </div>
         </div>
+      </div>
+      <div class="load-more">
+        <button class="load-more-button" @click="loadMoreBooks" :disabled="loading">
+          {{ loading ? 'Đang tải...' : 'Xem thêm' }}
+        </button>
       </div>
     </div>
   </section>
@@ -60,7 +50,7 @@ export default {
           title: 'Đắc nhân tâm',
           price: 120000,
           description: 'Cuốn sách nổi tiếng nhất, bán chạy nhất và có tầm ảnh hưởng nhất mọi thời đại.',
-          image: './assets/images/books/book1.jpg',
+          image: '/src/assets/images/books/book1.jpg',
           category: 'Kỹ năng sống',
           pages: 320,
           year: 2019,
@@ -71,7 +61,7 @@ export default {
           title: 'Nhà giả kim',
           price: 85000,
           description: 'Tác phẩm kinh điển của Paulo Coelho về hành trình theo đuổi ước mơ.',
-          image: './assets/images/books/book2.jpg',
+          image: '/src/assets/images/books/book2.jpg',
           category: 'Văn học',
           pages: 228,
           year: 2020,
@@ -82,22 +72,11 @@ export default {
           title: 'Dám nghĩ lớn',
           price: 95000,
           description: 'Cuốn sách giúp bạn mở rộng tư duy và đạt được những mục tiêu lớn trong cuộc sống.',
-          image: './assets/images/books/book3.jpg',
+          image: '/src/assets/images/books/book3.jpg',
           category: 'Kỹ năng sống',
           pages: 256,
           year: 2018,
           publisher: 'NXB Lao động'
-        },
-        {
-          id: 4,
-          title: 'Lập trình với Python',
-          price: 150000,
-          description: 'Sách hướng dẫn lập trình Python từ cơ bản đến nâng cao cho người mới bắt đầu.',
-          image: './assets/images/books/book4.jpg',
-          category: 'Công nghệ',
-          pages: 450,
-          year: 2021,
-          publisher: 'NXB Thông tin và Truyền thông'
         }
       ],
       page: 1,
@@ -210,5 +189,221 @@ export default {
 </script>
 
 <style scoped>
-/* Các style specific cho ExploreBooks, nếu cần */
+.featured-books {
+  padding: 80px 0;
+  background-color: #fff;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.section-header h2 {
+  color: #333;
+  font-size: 32px;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.section-header h2:after {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 50px;
+  height: 3px;
+  background: #4e4ffa;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.section-header p {
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.section-header p span {
+  color: #4e4ffa;
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.book-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.book-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.book-image {
+  height: 250px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.book-image img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+}
+
+.book-card:hover .book-image img {
+  transform: scale(1.05);
+}
+
+.book-info {
+  background-color: #f5f7fa;
+  padding: 12px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.book-category {
+  background-color: #4e4ffa;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.book-details {
+  display: flex;
+  gap: 10px;
+}
+
+.book-details span {
+  font-size: 12px;
+}
+
+.book-content {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-title {
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.book-price {
+  color: #4e4ffa;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.book-description {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.borrow-button {
+  background-color: #4e4ffa;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 0;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: 100%;
+}
+
+.borrow-button:hover {
+  background-color: #3838d1;
+}
+
+.load-more {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.load-more-button {
+  background-color: transparent;
+  color: #4e4ffa;
+  border: 2px solid #4e4ffa;
+  border-radius: 6px;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.load-more-button:hover {
+  background-color: #4e4ffa;
+  color: white;
+}
+
+.load-more-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 992px) {
+  .books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  
+  .book-image {
+    height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+  
+  .book-image {
+    height: 180px;
+  }
+  
+  .book-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .book-details {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
 </style> 

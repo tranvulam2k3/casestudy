@@ -45,16 +45,16 @@ import { onMounted } from 'vue'
 // Nạp các file JS sau khi DOM đã được render
 onMounted(() => {
   const scripts = [
-    "@/assets/js/jquery.js",
-    "@/assets/js/bootstrap.min.js",
-    "@/assets/js/bootsnav.js",
-    "@/assets/js/owl.carousel.min.js",
-    "@/assets/js/custom.js"
+    "/src/assets/js/jquery.js",
+    "/src/assets/js/bootstrap.min.js",
+    "/src/assets/js/bootsnav.js",
+    "/src/assets/js/owl.carousel.min.js",
+    "/src/assets/js/custom.js"
   ]
 
   scripts.forEach(src => {
     const script = document.createElement('script')
-    script.src = new URL(src, import.meta.url).href
+    script.src = src
     script.async = false
     document.body.appendChild(script)
   })
