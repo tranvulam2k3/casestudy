@@ -1,8 +1,6 @@
-import './assets/main.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.bundle.min'
-
 import { createApp } from 'vue'
 import App from './App.vue'
+
+// Nếu dùng thêm router hoặc pinia, import thêm ở đây
 
 createApp(App).mount('#app')
