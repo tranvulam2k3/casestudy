@@ -37,4 +37,7 @@ public class Book {
     @Column(name="status")
     String status;
 
+    @Column(name = "image")
+    String image;
+
 }

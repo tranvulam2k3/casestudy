@@ -8,5 +8,6 @@ create table book
     genre nvarchar(50),
     quantity int,
     price DECIMAL,
-    status nvarchar(50)
+    status nvarchar(50),
+    image nvarchar(225)
 );

@@ -1,16 +1,16 @@
 <script>
-import Authors from "@/components/Authors.vue";
-import ExploreBooks from "@/components/ExploreBooks.vue";
+import Authors from "@/components/home/Authors.vue";
+import ExploreBooks from "@/components/home/ExploreBooks.vue";
 import Footer from "@/components/Footer.vue";
 import Header from "@/components/Header.vue";
-import Hero from "@/components/Hero.vue";
-import Introduction from "@/components/Introduction.vue";
-
+import Hero from "@/components/home/Hero.vue";
+import Introduction from "@/components/home/Introduction.vue";
+import BookComponent from "@/components/BookComponent.vue";
 
 // Import toàn bộ CSS từ assets/css
 import "@/assets/css/animate.css";
 import "@/assets/css/owl.carousel.min.css";
-import "@/assets/css/bootstrap.min.css";
+// import "@/assets/css/bootstrap.min.css";
 import "@/assets/css/bootsnav.css";
 import "@/assets/css/style.css";
 
@@ -18,24 +18,26 @@ import "@/assets/css/style.css";
 export default {
   name: "App",
   components: {
-    Authors,
-    ExploreBooks,
-    Footer,
-    Header,
-    Hero,
-    Introduction
+    // Authors,
+    // ExploreBooks,
+    // Footer,
+    // Header,
+    // Hero,
+    // Introduction
+    BookComponent
   }
 };
 </script>
 
 <template>
   <div id="app">
-    <Header />
+    <BookComponent />
+    <!-- <Header />
     <Hero />
     <Introduction />
     <ExploreBooks />
     <Authors />
-    <Footer />
+    <Footer /> -->
   </div>
 </template>
 
@@ -46,7 +48,7 @@ import { onMounted } from 'vue'
 onMounted(() => {
   const scripts = [
     "/src/assets/js/jquery.js",
-    "/src/assets/js/bootstrap.min.js",
+    // "/src/assets/js/bootstrap.min.js",
     "/src/assets/js/bootsnav.js",
     "/src/assets/js/owl.carousel.min.js",
     "/src/assets/js/custom.js"
