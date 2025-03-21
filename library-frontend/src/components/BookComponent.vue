@@ -24,10 +24,14 @@
           <td>{{ book.quantity }}</td>
           <td>{{ book.price }}</td>
           <td>{{ book.status }}</td>
-          <td>{{ book.image }}</td>
           <td>
-            <button class="btn btn-warning"  @click="showModal(book)">Edit</button>
-            <button class="btn btn-danger"  @click="deleteBook(book.id)">Delete</button>
+            <img v-if="book.image" :src="`http://localhost:8080${book.image}`" 
+                 alt="Book cover" style="max-width: 50px; max-height: 50px;" />
+            <span v-else>No image</span>
+          </td>
+          <td>
+            <button class="btn btn-warning" @click="showModal(book)">Edit</button>
+            <button class="btn btn-danger" @click="deleteBook(book.id)">Delete</button>
           </td>
         </tr>
       </tbody>
@@ -37,10 +41,12 @@
     <div class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
+          
           <div class="modal-header">
             <h5 class="modal-title" id="modalLabel">{{ modalTitle }}</h5>
             <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
           </div>
+
           <div class="modal-body">
             <form @submit.prevent="saveBook">
               <div class="mb-3">
@@ -67,9 +73,34 @@
                 <label for="status" class="form-label">Trạng thái</label>
                 <input type="text" id="status" v-model="bookForm.status" class="form-control" required />
               </div>
-              <button type="submit" class="btn btn-primary">{{ buttonLabel }}</button>
+              
+              <!-- Trường upload file -->
+              <div class="mb-3">
+                <label for="imageFile" class="form-label">Ảnh bìa</label>
+                <input
+                  type="file"
+                  id="imageFile"
+                  class="form-control"
+                  accept="image/*"
+                  @change="onFileChange"
+                />
+                <!-- Hiển thị ảnh preview nếu có -->
+                <img
+                  v-if="previewImage"
+                  :src="previewImage"
+                  alt="Preview"
+                  style="max-width: 100%; margin-top: 10px;"
+                />
+              </div>
+
+              <!-- Button area -->
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @click="hideModal">Đóng</button>
+                <button type="submit" class="btn btn-primary">{{ buttonLabel }}</button>
+              </div>
             </form>
           </div>
+
         </div>
       </div>
     </div>
@@ -79,7 +110,7 @@
 <script>
 import BookService from "@/services/BookService";
 import { Modal } from 'bootstrap';
-
+import axios from 'axios';
 
 export default {
   name: "BookComponent",
@@ -94,8 +125,10 @@ export default {
         quantity: 0,
         price: 0.0,
         status: "",
-        image: "",
+        image: "",      // Đường dẫn ảnh (nếu có)
+        imageFile: null // File ảnh user chọn
       },
+      previewImage: "", // Ảnh xem trước
       editing: false,
       modalinstance: null
     };
@@ -109,30 +142,90 @@ export default {
     }
   },
   methods: {
-    showModal(books) {
-      if (books) {
-        this.bookForm = { ...books };
+    // Khi user chọn file
+    onFileChange(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      // Lưu file vào bookForm
+      this.bookForm.imageFile = file;
+      // Tạo preview
+      this.previewImage = URL.createObjectURL(file);
+    },
+
+    showModal(book) {
+      if (book) {
+        // Sao chép dữ liệu từ book
+        this.bookForm = {
+          id: book.id,
+          title: book.title,
+          author: book.author,
+          genre: book.genre,
+          quantity: book.quantity,
+          price: book.price,
+          status: book.status,
+          image: book.image, // URL ảnh cũ (nếu có)
+          imageFile: null    // chưa có file
+        };
+        // Hiển thị preview ảnh cũ nếu có
+        this.previewImage = book.image ? `http://localhost:8080${book.image}` : "";
         this.editing = true;
       } else {
         this.restForm();
       }
+
       if (!this.modalinstance) {
-        this.modalinstance = new Modal(document.getElementById('bookModal'))
+        this.modalinstance = new Modal(document.getElementById('bookModal'));
       }
       this.modalinstance.show();
     },
-    saveBook() {
-      const action = this.editing ? 'updateBook' : 'addBook';
-      BookService[action](this.bookForm)
-        .then(() => {
-          this.loadBooks();
-          this.modalinstance.hide();
-          this.restForm();
-        })
-        .catch(error => {
-          console.error("Error saving book:", error);
-        });
+
+    // Lưu book (thêm hoặc cập nhật)
+    async saveBook() {
+      console.log("saveBook method called", this.bookForm);
+      
+      try {
+        // Upload file trước nếu có
+        let imageUrl = this.bookForm.image || '';
+        
+        if (this.bookForm.imageFile) {
+          const formData = new FormData();
+          formData.append('file', this.bookForm.imageFile);
+          
+          const response = await axios.post('http://localhost:8080/api/images/upload', formData);
+          if (response.data) {
+            imageUrl = response.data; // Lấy URL trả về từ server
+            console.log("Image uploaded, URL:", imageUrl);
+          }
+        }
+        
+        // Tạo object data để gửi lên server
+        const bookData = {
+          id: this.bookForm.id,
+          title: this.bookForm.title,
+          author: this.bookForm.author,
+          genre: this.bookForm.genre, 
+          quantity: this.bookForm.quantity,
+          price: this.bookForm.price,
+          status: this.bookForm.status,
+          image: imageUrl // Sử dụng URL ảnh đã upload
+        };
+        
+        console.log("Sending book data:", bookData);
+        
+        // Xác định gọi addBook hay updateBook
+        const action = this.editing ? 'updateBook' : 'addBook';
+        const result = await BookService[action](bookData);
+        
+        console.log("Success response:", result);
+        this.loadBooks();
+        this.modalinstance.hide();
+        this.restForm();
+      } catch (error) {
+        console.error("Error saving book:", error.response || error);
+        alert("Lỗi khi lưu sách: " + (error.response?.data || error.message || "Lỗi không xác định"));
+      }
     },
+
     loadBooks() {
       BookService.getBooks()
         .then(response => {
@@ -142,9 +235,17 @@ export default {
           console.error("Error loading books:", error);
         });
     },
+
     deleteBook(id) {
-      BookService.deleteBook(id).then(this.loadBooks)
+      BookService.deleteBook(id)
+        .then(() => {
+          this.loadBooks();
+        })
+        .catch(error => {
+          console.error("Error deleting book:", error);
+        });
     },
+
     restForm() {
       this.bookForm = {
         id: null,
@@ -154,16 +255,20 @@ export default {
         quantity: 0,
         price: 0,
         status: '',
-        image: ''
+        image: '',
+        imageFile: null
       };
+      this.previewImage = "";
       this.editing = false;
     },
-  },
 
+    hideModal() {
+      this.modalinstance.hide();
+    }
+  },
 
   mounted() {
     this.loadBooks();
-
   }
 };
 </script>

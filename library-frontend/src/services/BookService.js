@@ -1,31 +1,45 @@
-import axios from "axios";
+import axios from 'axios';
 
-const BASE_URL = "http://localhost:8080/api/v1/librarys"
+const BASE_URL = 'http://localhost:8080/api/v1/librarys';
 
+// Cấu hình axios
+axios.interceptors.request.use(request => {
+  console.log('Starting Request', request);
+  return request;
+});
+
+axios.interceptors.response.use(
+  response => {
+    console.log('Response:', response);
+    return response;
+  },
+  error => {
+    console.error('Request Error:', error);
+    return Promise.reject(error);
+  }
+);
 
 export default {
-    // Lấy danh sách Book
-    getBooks() {
-      return axios.get(BASE_URL);
-    },
-  
-    // Lấy chi tiết 1 Book
-    getBookById(id) {
-      return axios.get(`${BASE_URL}/${id}`);
-    },
-  
-    // Tạo mới Book (Controller là @PostMapping -> POST /api/v1/librarys)
-    addBook(book) {
-      return axios.post(BASE_URL, book);
-    },
-  
-    // Cập nhật Book (Controller là @PutMapping("/{id}") -> PUT /api/v1/librarys/{id})
-    updateBook(book) {
-      return axios.put(`${BASE_URL}/${book.id}`, book);
-    },
-  
-    // Xóa Book (Controller là @DeleteMapping("/{id}") -> DELETE /api/v1/librarys/{id})
-    deleteBook(id) {
-      return axios.delete(`${BASE_URL}/${id}`);
+  getBooks() {
+    return axios.get(BASE_URL);
+  },
+
+  addBook(bookData) {
+    return axios.post(BASE_URL, bookData);
+  },
+
+  updateBook(bookData) {
+    const id = bookData.id;
+    
+    if (!id) {
+      console.error('No ID provided for updateBook');
+      return Promise.reject(new Error('No ID provided for update'));
     }
-  };
+    
+    return axios.put(`${BASE_URL}/${id}`, bookData);
+  },
+
+  deleteBook(id) {
+    return axios.delete(`${BASE_URL}/${id}`);
+  }
+};

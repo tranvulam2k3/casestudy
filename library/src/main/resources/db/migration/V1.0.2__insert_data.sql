@@ -32,6 +32,6 @@ VALUES ('Lão Hạc', 'Nam Cao', 'Truyện ngắn', 3, 25000, 'Đang dùng', 'bo
        ('Mỗi lần vấp ngã là một lần trưởng thành', 'Tsutomu Motohashi', 'Kỹ năng sống', 2, 28000, 'Đang dùng', 'books/book1.jpg'),
        ('Không thể quên em', 'Marc Levy', 'Tình cảm', 1, 27000, 'Đang dùng', 'books/book1.jpg'),
        ('Hạt giống tâm hồn', 'Nhiều tác giả', 'Truyền cảm hứng', 4, 25000, 'Đang dùng', 'books/book1.jpg'),
-       ('Tôi tài giỏi, bạn cũng thế!', 'Adam Khoo', 'Kỹ năng học tập', 5, 32000, 'Đang dùng', 'books/book1.jpg');
+       ('Tôi tài giỏi, bạn cũng thế!', 'Adam Khoo', 'Kỹ năng học tập', 5, 32000, 'Đang dùng', '/api/images/view/8cff63b2-8cfa-429f-8c13-b78cb154ce34_ERD_ThuVien.drawio.png');
 
 
