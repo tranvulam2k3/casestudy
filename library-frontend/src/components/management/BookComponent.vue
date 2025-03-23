@@ -6,12 +6,13 @@
         <tr>
           <th>ID</th>
           <th>Tên sách</th>
-          <th>Tác giả</th>
           <th>Thể loại</th>
           <th>Số lượng</th>
           <th>Giá</th>
           <th>Trạng thái</th>
           <th>URL</th>
+          <th>Tác giả</th>
+          <th>Ảnh tác giả</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -19,7 +20,6 @@
         <tr v-for="book in books" :key="book.id">
           <td>{{ book.id }}</td>
           <td>{{ book.title }}</td>
-          <td>{{ book.author }}</td>
           <td>{{ book.genre }}</td>
           <td>{{ book.quantity }}</td>
           <td>{{ book.price }}</td>
@@ -27,6 +27,12 @@
           <td>
             <img v-if="book.image" :src="`http://localhost:8080${book.image}`" 
                  alt="Book cover" style="max-width: 50px; max-height: 50px;" />
+            <span v-else>No image</span>
+          </td>
+          <td>{{ book.authorName }}</td>
+          <td>
+            <img v-if="book.authorImage" :src="`http://localhost:8080${book.authorImage}`" 
+                 alt="Author image" style="max-width: 50px; max-height: 50px;" />
             <span v-else>No image</span>
           </td>
           <td>
@@ -52,10 +58,6 @@
               <div class="mb-3">
                 <label for="title" class="form-label">Tên sách</label>
                 <input type="text" id="title" v-model="bookForm.title" class="form-control" required />
-              </div>
-              <div class="mb-3">
-                <label for="author" class="form-label">Tác giả</label>
-                <input type="text" id="author" v-model="bookForm.author" class="form-control" required />
               </div>
               <div class="mb-3">
                 <label for="genre" class="form-label">Thể loại</label>
@@ -126,6 +128,8 @@ export default {
         price: 0.0,
         status: "",
         image: "",      // Đường dẫn ảnh (nếu có)
+        authorName: "",
+        authorImage: "",
         imageFile: null // File ảnh user chọn
       },
       previewImage: "", // Ảnh xem trước
@@ -163,7 +167,9 @@ export default {
           quantity: book.quantity,
           price: book.price,
           status: book.status,
-          image: book.image, // URL ảnh cũ (nếu có)
+          image: book.image,
+          authorName: book.authorName,
+          authorImage: book.authorImage, // URL ảnh cũ (nếu có)
           imageFile: null    // chưa có file
         };
         // Hiển thị preview ảnh cũ nếu có
@@ -207,6 +213,8 @@ export default {
           quantity: this.bookForm.quantity,
           price: this.bookForm.price,
           status: this.bookForm.status,
+          authorName: this.bookForm.authorName,
+          authorImage: this.bookForm.authorImage,
           image: imageUrl // Sử dụng URL ảnh đã upload
         };
         
@@ -256,6 +264,8 @@ export default {
         price: 0,
         status: '',
         image: '',
+        authorName: '',
+        authorImage: '',
         imageFile: null
       };
       this.previewImage = "";

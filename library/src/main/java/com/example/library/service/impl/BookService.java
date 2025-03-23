@@ -1,5 +1,7 @@
 package com.example.library.service.impl;
 
+import com.example.library.dto.book.BookResponse;
+import com.example.library.mapper.IBookMapper;
 import com.example.library.model.Book;
 import com.example.library.repository.IBookRepository;
 import com.example.library.service.IBookService;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +24,8 @@ public class BookService implements IBookService {
     IBookRepository bookRepository;
 
     @Override
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public List<BookResponse> getAllBooks() {
+        return bookRepository.findAllBookAndAuthor();
     }
 
     @Override

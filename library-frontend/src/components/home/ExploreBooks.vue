@@ -6,20 +6,21 @@
         <h2>Sách nổi bật</h2>
       </div>
       <div class="books-grid">
-        <div class="book-card" v-for="book in books" :key="book.id">
+        <div class="book-card" v-for="book in limitedBooks" :key="book.id">
           <div class="book-image">
-            <img :src="book.image" :alt="book.title">
+            <img v-if="book.image" :src="`http://localhost:8080${book.image}`" :alt="book.title" @error="handleImageError">
+            <img v-else :src="placeholderImage" :alt="book.title">
           </div>
           <div class="book-info">
             <span class="book-category">{{ book.genre }}</span>
             <div class="book-details">
+              <span> {{ book.authorName }}</span>
               <span>còn {{ book.quantity }} quyển</span>
-              <span>{{ book.year }}</span>
               <span>{{ book.status }}</span>
             </div>
           </div>
           <div class="book-content">
-            <h3 class="book-title">{{ book.title }}</h3>
+            <h3 class="book-title">{{ book.title }} </h3>
             <div class="book-price">{{ formatPrice(book.price) }}</div>
             <p class="book-description">{{ book.description }}</p>
             <button class="borrow-button" @click="borrowBook(book.id)">
@@ -55,20 +56,39 @@ export default {
         price: 0.0,
         status: "",
         image: "",
+        authorName: "",
       },
+      placeholderImage: 'https://via.placeholder.com/250x350?text=No+Image',
     };
   },
+  computed: {
+    limitedBooks() {
+      return this.books.slice(0, 6);
+    }
+  },
+
+
   methods: {
     formatPrice(price) {
       return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
     },
     loadBooks() {
+      this.loading = true;
       BookService.getBooks()
         .then(response => {
-          this.books = response.data;
+          // Đảm bảo mỗi sách đều có mô tả ngắn
+          this.books = response.data.map(book => ({
+            ...book,
+            description: book.description || 'Chưa có mô tả cho sách này.',
+            year: book.year || 'N/A'
+          }));
+          console.log("Loaded books:", this.books);
         })
         .catch(error => {
           console.error("Error loading books:", error);
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
     borrowBook(bookId) {
@@ -76,11 +96,10 @@ export default {
       // Gọi API hoặc xử lý mượn ở đây
     },
     loadMoreBooks() {
-      this.loading = true;
-      // Logic tải thêm sách (nếu có phân trang)
-      setTimeout(() => {
-        this.loading = false;
-      }, 1000);
+      this.$router.push('/book');
+    },
+    handleImageError(event) {
+      event.target.src = this.placeholderImage;
     }
   },
   mounted() {
@@ -164,6 +183,13 @@ export default {
   background-color: #f9f9f9;
   padding: 20px;
   border-bottom: 1px solid #eee;
+  position: relative;
+}
+
+.book-image::after {
+  content: '';
+  display: block;
+  padding-bottom: 100%;
 }
 
 .book-image img {
@@ -171,6 +197,12 @@ export default {
   max-width: 100%;
   object-fit: contain;
   transition: transform 0.5s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
 }
 
 .book-card:hover .book-image img {

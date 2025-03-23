@@ -7,11 +7,11 @@
       <div class="author-container">
         <div class="author-item" v-for="author in authors" :key="author.id">
           <div class="author-image">
-            <img :src="author.image" :alt="author.name">
+            <img :src="`http://localhost:8080${author.image}`" :alt="author.title">
           </div>
           <div class="author-content">
             <h3 class="author-name">{{ author.name }}</h3>
-            <p class="author-description">{{ author.description }}</p>
+            <p class="author-description">{{ author.bio }}</p>
           </div>
         </div>
       </div>
@@ -20,56 +20,37 @@
 </template>
 
 <script>
+import AuthorService from '../../services/AuthorService';
+
 export default {
   name: 'AuthorsComponent',
   data() {
     return {
-      authors: [
-        {
-          id: 1,
-          name: 'Nguyễn Nhật Ánh',
-          description: 'Nhà văn nổi tiếng với nhiều tác phẩm đặc sắc như "Mắt biếc", "Tôi thấy hoa vàng trên cỏ xanh"...',
-          image: '/src/assets/images/authors/author3.jpg'
-        },
-        {
-          id: 2,
-          name: 'Rosie Nguyễn',
-          description: 'Tác giả của những cuốn sách self-help nổi tiếng như "Tuổi trẻ đáng giá bao nhiêu".',
-          image: '/src/assets/images/authors/author3.jpg'
-        },
-        {
-          id: 3,
-          name: 'Tô Hoài',
-          description: 'Nhà văn nổi tiếng với tác phẩm "Dế Mèn phiêu lưu ký", một tác phẩm kinh điển của văn học Việt Nam.',
-          image: '/src/assets/images/authors/author3.jpg'
-        }
-      ]
+      authors: [],
+      authorForm: {
+        id: null,
+        name: "",
+        image: "",
+        bio: ""
+      }
+    }
+  },
+  methods: {
+    loadAuthors() {
+      AuthorService.getAuthors()
+        .then(response => {
+          this.authors = response.data;
+        })
+        .catch(error => {
+          console.error("Error loading authors:", error);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     }
   },
   mounted() {
-    // Khởi tạo carousel sau khi component được mount
-    // Lưu ý: Cần import thư viện owl carousel trước khi sử dụng
-    this.$nextTick(() => {
-      if (window.jQuery && window.jQuery.fn.owlCarousel) {
-        window.jQuery('.testimonial-carousel').owlCarousel({
-          items: 3,
-          margin: 0,
-          loop: true,
-          autoplay: true,
-          smartSpeed: 1000,
-          dots: false,
-          autoplayHoverPause: false,
-          responsiveClass: true,
-          responsive: {
-            0: { items: 1 },
-            640: { items: 2 },
-            992: { items: 3 }
-          }
-        });
-      } else {
-        console.warn('Owl Carousel chưa được tải. Kiểm tra lại việc import thư viện.');
-      }
-    });
+    this.loadAuthors();
   }
 }
 </script>
@@ -105,29 +86,31 @@ export default {
   transform: translateX(-50%);
 }
 
-.section-header p {
-  color: #666;
-  margin-bottom: 5px;
-}
-
-.section-header p span {
-  color: #4e4ffa;
-}
-
+/* ----- Phần quan trọng: đổi từ grid sang flex ----- */
 .author-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  /* Không cho xuống hàng, tất cả item nằm trên một dòng */
+  flex-wrap: nowrap;
+  /* Cho phép cuộn ngang */
+  overflow-x: auto;
+  /* Khoảng cách giữa các item */
   gap: 30px;
   margin-top: 30px;
+
+  /* Tùy chọn: cuộn mượt */
+  scroll-behavior: smooth;
 }
 
+/* Mỗi item có độ rộng cố định, thay vì để tự co giãn */
 .author-item {
+  flex: 0 0 300px;
   background: white;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
   text-align: center;
+  /* Để hiển thị đẹp hơn khi cuộn, thêm margin-bottom nếu muốn */
 }
 
 .author-item:hover {
@@ -157,7 +140,6 @@ export default {
 
 .author-content {
   padding: 0 30px 60px;
-  
 }
 
 .author-name {
@@ -167,27 +149,9 @@ export default {
   margin-bottom: 5px;
 }
 
-
 .author-description {
   color: #666;
   font-size: 20px;
   line-height: 1.6;
 }
-
-@media (max-width: 992px) {
-  .author-container {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .author-container {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  }
-  
-  .author-image {
-    width: 100px;
-    height: 100px;
-  }
-}
-</style> 
+</style>

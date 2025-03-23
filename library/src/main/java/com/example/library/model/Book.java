@@ -13,17 +13,15 @@ import java.math.BigDecimal;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 @Entity
+@Table(name = "book")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "book_id")
     Integer id;
 
     @Column(name="title")
     String title;
-
-    @Column(name="author")
-    String author;
 
     @Column(name="genre")
     String genre;
@@ -39,5 +37,9 @@ public class Book {
 
     @Column(name = "image")
     String image;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    Author author;
 
 }
